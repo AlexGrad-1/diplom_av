@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
+from django.http import Http404
 
 from posts.models import Post, Comment, Like
 from posts.permissions import IsOwnerOrReadOnly
@@ -60,12 +61,18 @@ class LikeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, post_id):
-        post = Post.objects.get(id=post_id)
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return Response({'detail': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
         if not Like.objects.filter(post=post, author=request.user).exists():
             Like.objects.create(post=post, author=request.user)
         return Response(status=status.HTTP_200_OK)
 
     def delete(self, request, post_id):
-        post = Post.objects.get(id=post_id)
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return Response({'detail': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
         Like.objects.filter(post=post, author=request.user).delete()
         return Response(status=status.HTTP_200_OK)

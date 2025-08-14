@@ -20,12 +20,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*4*ra&$xvv*ut!-!c%eyxxi(ewlosh(&&k+mwew)85zgf2m4qg'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    raise Exception("DJANGO_SECRET_KEY environment variable is not set!")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',')
+
 
 
 # Application definition
@@ -81,14 +84,17 @@ WSGI_APPLICATION = 'social_network.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'diplom_av',
-        'USER': 'postgres',
-        'PASSWORD': 'ecid6oto',
-        'HOST': 'localhost',
-        'PORT': 5432
+        'NAME': os.environ.get('POSTGRES_DB', 'diplom_av'),
+        'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'ecid6oto'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+        'PORT': os.environ.get('POSTGRES_PORT', 5432),
     }
 }
 
+for var in ['POSTGRES_DB', 'POSTGRES_USER', 'POSTGRES_PASSWORD']:
+    if not os.environ.get(var):
+        raise Exception(f"{var} environment variable is not set!")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

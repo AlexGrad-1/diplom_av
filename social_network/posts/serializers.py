@@ -4,21 +4,29 @@ from posts.models import Comment, Post, PostImage
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Comment
-        fields = ['author', 'text', 'created_at']
+        fields = ['id','author', 
+                  'text', 
+                  'created_at']
 
 
 class CommentPostSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
     class Meta:
         model = Comment
-        fields = ['id', 'text', 'created_at']
+        fields = ['id', 
+                  'text', 
+                  'created_at']
 
 
 class ImagesPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostImage
-        fields = ['post', 'image']
+        fields = ['post', 
+                  'image']
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -27,7 +35,11 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'text', 'images', 'created_at', 'comments']
+        fields = ['id', 
+                  'text', 
+                  'images', 
+                  'created_at', 
+                  'comments']
 
     def to_representation(self, post):
         representation = super().to_representation(post)
